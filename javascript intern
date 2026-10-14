@@ -1,1 +1,228 @@
 
+// =====================================================
+// JavaScript Assignments + Capstone Project - Solutions
+// Browser console me chalao (prompt() kaam karega).
+// Node me chalane par prompt() ki jagah default values use hongi.
+// =====================================================
+
+// prompt() browser ke bahar nahi hota, isliye safe helper
+const ask = (msg, fallback) =>
+  typeof prompt === "function" ? prompt(msg, fallback) : fallback;
+
+// ---------- Assignment 1: Variables, Data Types ----------
+console.log("===== Assignment 1 =====");
+var name = "Alice";
+let age = 25;
+const isEmployed = true;
+const skills = ["HTML", "CSS", "JavaScript"];
+
+console.log(`Name: ${name} (Type: ${typeof name})`);
+console.log(`Age: ${age} (Type: ${typeof age})`);
+console.log(`Is Employed: ${isEmployed} (Type: ${typeof isEmployed})`);
+console.log(`Skills: ${JSON.stringify(skills)} (Type: ${typeof skills})`);
+
+// ---------- Assignment 2: Operators & Input ----------
+console.log("\n===== Assignment 2 =====");
+const subtotal = Number(ask("Enter bill amount:", "100"));
+const tipPercent = Number(ask("Enter tip percentage:", "15"));
+
+let tip = (subtotal * tipPercent) / 100;
+let total = subtotal;
+total += tip; // assignment operator
+
+console.log(`Subtotal: $${subtotal}`);
+console.log(`Tip Percentage: ${tipPercent}%`);
+console.log(`Calculated Tip: $${tip}`);
+console.log(`Total Amount to Pay: $${total}`);
+
+// ---------- Assignment 3: Conditional Logic ----------
+console.log("\n===== Assignment 3 =====");
+const score = 85;
+let grade;
+
+if (score < 0 || score > 100) {
+  grade = "Invalid";
+} else {
+  switch (Math.floor(score / 10)) {
+    case 10:
+    case 9:
+      grade = "A";
+      break;
+    case 8:
+      grade = "B";
+      break;
+    case 7:
+      grade = "C";
+      break;
+    case 6:
+      grade = "D";
+      break;
+    default:
+      grade = "F";
+  }
+}
+const status = score >= 40 ? "Passed" : "Failed"; // ternary
+
+console.log(`Score: ${score}`);
+console.log(`Grade: ${grade}`);
+console.log(`Status: ${status}`);
+
+// ---------- Assignment 4: Loops ----------
+console.log("\n===== Assignment 4 =====");
+console.log("-- Multiplication Table of 5 --");
+for (let i = 1; i <= 5; i++) {
+  console.log(`5 x ${i} = ${5 * i}`);
+}
+
+console.log("-- First number > 10 divisible by 6 --");
+let n = 11;
+while (true) {
+  if (n % 6 === 0) {
+    console.log(`Found: ${n}`);
+    break;
+  }
+  n++;
+}
+
+console.log("-- do...while with continue (skip even numbers) --");
+let k = 0;
+do {
+  k++;
+  if (k % 2 === 0) continue; // even numbers skip
+  console.log(`Odd number: ${k}`);
+} while (k < 7);
+
+// ---------- Assignment 5: Functions & Scope ----------
+console.log("\n===== Assignment 5 =====");
+function rectArea(length = 5, width = 4) {
+  return length * width;
+}
+const rectAreaArrow = (length = 5, width = 4) => length * width;
+
+console.log(`Standard Function Area (Default 5x4): ${rectArea()}`);
+console.log(`Arrow Function Area (Custom 10x3): ${rectAreaArrow(10, 3)}`);
+
+{
+  let blockVar = "I live inside the block";
+}
+try {
+  console.log(blockVar);
+} catch (e) {
+  console.log(`Scope Test Error: ${e.name}: ${e.message} (when accessed outside block)`);
+}
+
+// ---------- Assignment 6: Arrays, Objects, Methods ----------
+console.log("\n===== Assignment 6 =====");
+const products = [
+  { name: "Laptop", price: 800 },
+  { name: "Mouse", price: 25 },
+  { name: "Keyboard", price: 45 },
+];
+
+console.log("-- All Products (forEach) --");
+products.forEach((p) => console.log(`Item: ${p.name} - Price: $${p.price}`));
+
+console.log("-- Filtered Products (Price < $50) --");
+console.log(products.filter((p) => p.price < 50));
+
+console.log("-- Mapped Product Tags (map) --");
+console.log(products.map((p) => `${p.name.toUpperCase()} costs $${p.price}`));
+
+// =====================================================
+// CAPSTONE: Interactive Product Inventory & Analytics Dashboard
+// =====================================================
+console.log("\n\n===== CAPSTONE PROJECT =====");
+console.log("--- Initializing Inventory System ---");
+
+// 1. Data & input initialization
+const inventory = [
+  { name: "Laptop", price: 800 },
+  { name: "Mouse", price: 25 },
+];
+
+// Input lena, bad input par loop me continue/break
+function getValidProduct() {
+  const defaults = ["Monitor", "150"];
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    const rawName = ask("Enter product name:", defaults[0]);
+    const rawPrice = ask("Enter product price:", defaults[1]);
+
+    if (rawName === null || rawPrice === null) break; // user ne cancel kiya
+    if (!rawName.trim()) {
+      console.log("Name khali hai, dobara try karo.");
+      continue;
+    }
+    const price = Number(rawPrice); // explicit conversion
+    if (Number.isNaN(price) || price <= 0) {
+      console.log("Price valid number nahi hai, dobara try karo.");
+      continue;
+    }
+    return { name: rawName.trim(), price };
+  }
+  return null;
+}
+
+const newProduct = getValidProduct();
+if (newProduct) {
+  inventory.push(newProduct);
+  console.log(`[Prompt executed: User adds "${newProduct.name}" at "$${newProduct.price}"]`);
+} else {
+  console.log("[No valid product added]");
+}
+
+// 2. Conditional evaluation: category badge
+function getCategory(price) {
+  switch (true) {
+    case price >= 500:
+      return "Premium";
+    case price >= 100:
+      return "Standard";
+    default:
+      return "Budget";
+  }
+}
+
+// 3. Loop se search (break use karke)
+function findProduct(list, productName) {
+  let found = null;
+  for (const item of list) {
+    if (!item || typeof item.price !== "number") continue; // bad data skip
+    if (item.name.toLowerCase() === productName.toLowerCase()) {
+      found = item;
+      break;
+    }
+  }
+  return found;
+}
+
+// 4. Functions & scope: regular + arrow
+function totalInventoryValue(list) {
+  let sum = 0; // local scope
+  for (const item of list) sum += item.price;
+  return sum;
+}
+const applyTax = (price, taxRate = 0.18) => +(price * (1 + taxRate)).toFixed(2);
+const applyDiscount = (price, discount = 0.1) => +(price * (1 - discount)).toFixed(2);
+
+// 5. Array methods
+console.log("\n--- Processing Inventory Roster (forEach) ---");
+inventory.forEach((item) => {
+  console.log(`* Item: ${item.name} ($${item.price}) -> Category: ${getCategory(item.price)}`);
+});
+
+console.log("\n--- Financial Analytics ---");
+console.log(`Total Inventory Value: $${totalInventoryValue(inventory)}`);
+
+const affordable = inventory.filter((item) => item.price < 200).map((item) => item.name);
+console.log("Filtered Affordable Items (Under $200):", affordable);
+
+const report = inventory.map((item) => `${item.name.toUpperCase()}: $${item.price}`);
+console.log("Formatted Report List:", report);
+
+// Extra: search + tax/discount demo
+const found = findProduct(inventory, "monitor");
+if (found) {
+  console.log(`\nSearch: ${found.name} mila.`);
+  console.log(`  With 18% tax: $${applyTax(found.price)}`);
+  console.log(`  With 10% discount: $${applyDiscount(found.price)}`);
+}
